@@ -1,3 +1,11 @@
+2001-04-02 19:15  jmknoble
+
+	* Imakefile.in, configure: Added setting of $(CC) if CC is set in
+	the environment.  Display compiler, cflags, and ldflags settings at
+	end of configuration.  Added '--default' option to ./configure to
+	allow maintainer (me:) to generate an Imakefile containing default
+	settings for putting in the distribution tarball.
+
 2001-04-01 20:16  jmknoble
 
 	* Imakefile.in: New version 1.2.1.
@@ -238,7 +246,7 @@
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
 	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
 	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
-	ISO-8859-1 copyright character '©' to ASCII '(C)'.
+	ISO-8859-1 copyright character 'ï¿½' to ASCII '(C)'.
 
 2000-08-28 01:27  jmknoble
 

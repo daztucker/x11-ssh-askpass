@@ -119,6 +119,20 @@ GetEnableOption() {
   esac
 }
 
+UseDefaults () {
+  unset CC
+  unset CFLAGS
+  unset LDFLAGS
+
+  prefix=''
+  exec_prefix=''
+  libexecdir=''
+  mandir=''
+  app_defaults=''
+  app_defaults_dir=''
+  enable_installing_app_defaults=''
+}
+
 IMAKEFILE_SRC="Imakefile.in"
 IMAKEFILE_DST="Imakefile"
 
@@ -152,6 +166,10 @@ while [ $# -gt 0 ]; do
   case "$1" in
     -h|--help|-help|-\?)
       PrintHelp
+    ;;
+    -d|--default|--defaults|--use-defaults)
+      UseDefaults
+      break
     ;;
     --prefix=*|--exec-prefix=*|--libexecdir=*|--mandir=*)
       GetOptionArg "$1"
@@ -217,18 +235,35 @@ case "${enable_installing_app_defaults}" in
   ;;
 esac
 
-if [ -n "${CFLAGS}" ]; then
+if [ -n "${CC}" ]; then
   cat "${IMAKEFILE_DST}" |sed \
-    -e 's#^[ 	]*XCOMM[ 	]\+\(CDEBUGFLAGS[ 	]=\).*$#\1 '"${CFLAGS}"'#' \
+    -e 's#^[ 	]*XCOMM[ 	]\+\(CC[ 	]*=\).*$#\1 '"${CC}"'#' \
     >"${IMAKEFILE_DST}.tmp" \
   && mv -f "${IMAKEFILE_DST}.tmp" "${IMAKEFILE_DST}"
+else
+  CC='default'
+fi
+
+if [ -n "${CFLAGS}" ]; then
+  cat "${IMAKEFILE_DST}" |sed \
+    -e 's#^[ 	]*XCOMM[ 	]\+\(CDEBUGFLAGS[ 	]*=\).*$#\1 '"${CFLAGS}"'#' \
+    >"${IMAKEFILE_DST}.tmp" \
+  && mv -f "${IMAKEFILE_DST}.tmp" "${IMAKEFILE_DST}"
+else
+  CFLAGS='default'
 fi
 
 if [ -n "${LDFLAGS}" ]; then
   cat "${IMAKEFILE_DST}" |sed \
-    -e 's#^[ 	]*XCOMM[ 	]\+\(LOCAL_LDFLAGS[ 	]=\).*$#\1 '"${LDFLAGS}"'#' \
+    -e 's#^[ 	]*XCOMM[ 	]\+\(LOCAL_LDFLAGS[ 	]*=\).*$#\1 '"${LDFLAGS}"'#' \
     >"${IMAKEFILE_DST}.tmp" \
   && mv -f "${IMAKEFILE_DST}.tmp" "${IMAKEFILE_DST}"
+else
+  LDFLAGS='default'
+fi
+
+if [ "${app_defaults_dir}" = "${default_default_app_defaults_dir}" ]; then
+  app_defaults_dir='default'
 fi
 
 cat <<EOF
@@ -240,6 +275,10 @@ x11-ssh-askpass has been configured with the following options:
           Application defaults file: ${app_defaults}
      Application defaults directory: ${app_defaults_dir}
   Install application defaults file: ${enable_installing_app_defaults}
+
+        Compiler: ${CC}
+  Compiler flags: ${CFLAGS}
+    Linker flags: ${LDFLAGS}
 
 You may now create the Makefile and build x11-ssh-askpass using the
 following commands:

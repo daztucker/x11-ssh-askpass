@@ -29,6 +29,7 @@ MANDIR		= $(MANPATH)/man1
 APPDEFDIR	= $(XAPPLOADDIR)
 APP_DEFAULTS	= $(CLASS)-default.ad
 
+XCOMM CC		=
 XCOMM CDEBUGFLAGS	=
 XCOMM LOCAL_LDFLAGS	=
 XCOMM -------- end configurable settings --------
@@ -71,8 +72,8 @@ TAR		= tar
 
 MAKE_CHANGELOG	= cvs2cl
 
-VERSION		= 1.2.1
-DATE		= April 1, 2001
+VERSION		= 1.2.2
+DATE		= April 2, 2001
 PROJECT		= $(NAME)-$(VERSION)
 DIST_DIR	= $(PROJECT)
 DIST		= $(PROJECT).tar.gz
@@ -105,7 +106,7 @@ CONFIGURE	= configure
 
 IMAKEFILE_OBJ	= Imakefile
 IMAKEFILE_SRC	= $(IMAKEFILE_OBJ).in
-IMAKEFILES	= $(IMAKEFILE_SRC) $(IMAKEFILE_OBJ)
+IMAKEFILES	= $(IMAKEFILE_SRC)
 
 DOCS = \@@\
  README \@@\
@@ -119,6 +120,7 @@ APP_DEFAULTS_FILES = \@@\
  $(CLASS)-default.ad \@@\
 
 DIST_FILES = \@@\
+ $(IMAKEFILES) \@@\
  $(CONFIGURE) \@@\
  $(IMAKEFILES) \@@\
  $(DOCS) \@@\
