@@ -5,6 +5,15 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-01-07 09:52  jmknoble
+
+	* Imakefile: Now we install the actual program as
+	`x11-ssh-askpass', and make a symlink to that from `ssh-askpass'.
+	This allows for multiple passphrase dialogs on a system.
+        Bumped version to 1.0.
+
+	* README: Added note about location of x11-ssh-askpass.
+
 1999-12-24 06:59  jmknoble
 
 	* Imakefile: Oops.  Version backed out to 0.99; missing spec file

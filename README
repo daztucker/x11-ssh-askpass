@@ -1,6 +1,6 @@
 # README: Notes about X11-based passphrase dialog for OpenSSH
 # created 1999-Nov-21 jmk
-# autodate: 1999-Dec-24 00:32
+# autodate: 2000-Jan-07 04:53
 
 +-------------+
 | Description |
@@ -75,6 +75,14 @@ commands before building (for example):
 
   rm -f SshAskpass_ad.h
   make includes APP_DEFAULTS=SshAskpass-NeXTish.ad
+
++-----------------+
+| Where To Get It |
++-----------------+
+
+x11-ssh-askpass is available at:
+
+  http://www.pobox.com/~jmknoble/software/x11-ssh-askpass/
 
 +--------------------------+
 | Copyright, License, Etc. |
