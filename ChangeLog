@@ -5,6 +5,25 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-09-24 04:43  jmknoble
+
+	* x11-ssh-askpass.c, x11-ssh-askpass.h: Added process ID to
+	diagnostic/error messages on stderr (helps when more than one
+	ssh-askpass is started, e.g., with a shortcut key and keyboard
+	repeat).
+	
+	Modified keyboard and pointer grabbing so that, if we don't get the
+	keyboard or pointer the first time, we print a helpful message,
+	sleep, and then retry.	If we time out without successfully getting
+	the keyboard or pointer, then we fail as before.
+	
+	Combined the logic for grabKeyboard() and grabPointer() into a
+	common function performGrab().	This makes it easier to ensure that
+	the grab/sleep logic is correct in both places.
+	
+	Fixed, worked around or commented on a few warnings emitted by 'gcc
+	-Wall -W -ansi -pedantic'.
+
 2000-09-24 04:32  jmknoble
 
 	* resources.c: Removed unused declaration of get_time_resource.

@@ -1,6 +1,6 @@
 /* x11-ssh-askpass.c:  A generic X11-based password dialog for OpenSSH.
  * created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
- * autodate: 2000-Aug-28 01:57
+ * autodate: 2000-Sep-24 00:07
  * 
  * by Jim Knoble <jmknoble@jmknoble.cx>
  * Copyright (C) 1999,2000 Jim Knoble
@@ -41,6 +41,8 @@
 /* For (get|set)rlimit() ... */
 #include <sys/time.h>
 #include <sys/resource.h>
+/* ... end */
+/* For (get|set)rlimit(), sleep(), and getpid() ... */
 #include <unistd.h>
 /* ... end */
 
@@ -71,8 +73,8 @@ static char *defaults[] = {
 
 void outOfMemory(AppInfo *app, int line)
 {
-   fprintf(stderr, "%s: Aaahhh! I ran out of memory at line %d.\n",
-	   app->appName, line);
+   fprintf(stderr, "%s[%ld]: Aaahhh! I ran out of memory at line %d.\n",
+	   app->appName, (long) app->pid, line);
    exit(EXIT_STATUS_NO_MEMORY);
 }
 
@@ -816,31 +818,77 @@ void paintDialog(AppInfo *app)
    XSync(app->dpy, False);
 }
 
-void grabKeyboard(AppInfo *app)
-{
-   if ((!(app->grabKeyboard)) || (app->isKeyboardGrabbed)) {
+void performGrab(AppInfo *app, int grabType, char *grabTypeName,
+		 Bool shouldGrab, Bool *isGrabbed) {
+   if ((!(shouldGrab)) || (*isGrabbed)) {
+      return;
+   } else if ((GRAB_KEYBOARD != grabType) && (GRAB_POINTER != grabType)) {
+      fprintf(stderr, "%s[%ld]: performGrab: invalid grab type (%d).\n",
+	      app->appName, (long) app->pid, grabType);
       return;
    } else {
-      int status;
+      int status = GrabInvalidTime;	/* keep gcc -Wall from complaining */
+      unsigned int seconds = 0;
+      int helpful_message = 0;
+      /* keyboard and pointer */
       Window grabWindow = app->dialog->dialogWindow;
       Bool ownerEvents = False;
       Bool pointerMode = GrabModeAsync;
       Bool keyboardMode = GrabModeAsync;
+      /* pointer only */
+      unsigned int eventMask = ButtonPressMask | ButtonReleaseMask;
+      Window confineTo = None;
+      Cursor cursor = None;
+      
+      *isGrabbed = True;
+      
+      if (NULL == grabTypeName) {
+	 fprintf(stderr, "%s[%ld]: performGrab: null grab type name.\n",
+		 app->appName, (long) app->pid);
+      }
 
-      app->isKeyboardGrabbed = True;
-      XSync(app->dpy, False);
-      status = XGrabKeyboard(app->dpy, grabWindow, ownerEvents,
-			     pointerMode, keyboardMode, CurrentTime);
-      XSync(app->dpy, False);
+      if (0 == app->grabFailTimeout) {
+	 /* Ensure we try to perform the grab at least once. */
+	 app->grabFailTimeout = 1;
+      }
+      while (seconds < app->grabFailTimeout) {
+	 XSync(app->dpy, False);
+	 switch (grabType) {
+	  case GRAB_KEYBOARD:
+	    status = XGrabKeyboard(app->dpy, grabWindow, ownerEvents,
+				   pointerMode, keyboardMode, CurrentTime);
+	    break;
+	  case GRAB_POINTER:
+	    status = XGrabPointer(app->dpy, grabWindow, ownerEvents,
+				  eventMask, pointerMode, keyboardMode,
+				  confineTo, cursor, CurrentTime);
+	    break;
+	 }
+	 XSync(app->dpy, False);
+	 if (GrabSuccess == status) {
+	    if (helpful_message) {
+	       fprintf(stderr, "%s[%ld]: Got %s.\n",
+		       app->appName, (long) app->pid, grabTypeName);
+	    }
+	    break;
+	 }
+	 if (!helpful_message) {
+	    fprintf(stderr, "%s[%ld]: Trying to grab %s ...\n",
+		    app->appName, (long) app->pid, grabTypeName);
+	    helpful_message = 1;
+	 }
+	 seconds += app->grabRetryInterval;
+	 sleep(app->grabRetryInterval);
+      }
       if (GrabSuccess != status) {
 	 char *reason = "reason unknown";
 	 
 	 switch (status) {
 	  case AlreadyGrabbed:
-	    reason = "someone else already has the keyboard";
+	    reason = "someone else already has it";
 	    break;
 	  case GrabFrozen:
-	    reason = "someone else has frozen the keyboard";
+	    reason = "someone else has frozen it";
 	    break;
 	  case GrabInvalidTime:
 	    reason = "bad grab time [this shouldn't happen]";
@@ -849,11 +897,18 @@ void grabKeyboard(AppInfo *app)
 	    reason = "grab not viewable [this shouldn't happen]";
 	    break;
 	 }
-	 fprintf(stderr, "%s: Could not grab keyboard (%s)\n",
-		 app->appName, reason);
+	 fprintf(stderr, "%s[%ld]: Could not grab %s (%s)\n",
+		 app->appName, (long) app->pid, grabTypeName, reason);
 	 exitApp(app, EXIT_STATUS_ERROR);
       }
    }
+}
+		 
+
+void grabKeyboard(AppInfo *app)
+{
+   performGrab(app, GRAB_KEYBOARD, "keyboard", app->grabKeyboard,
+	       &(app->isKeyboardGrabbed));
 }
 
 void ungrabKeyboard(AppInfo *app)
@@ -865,46 +920,8 @@ void ungrabKeyboard(AppInfo *app)
 
 void grabPointer(AppInfo *app)
 {
-   if ((!(app->grabPointer)) || (app->isPointerGrabbed)) {
-      return;
-   } else {
-      int status;
-      Window grabWindow = app->dialog->dialogWindow;
-      Bool ownerEvents = False;
-      unsigned int eventMask = ButtonPressMask | ButtonReleaseMask;
-      Bool pointerMode = GrabModeAsync;
-      Bool keyboardMode = GrabModeAsync;
-      Window confineTo = None;
-      Cursor cursor = None;
-
-      app->isPointerGrabbed = True;
-      XSync(app->dpy, False);
-      status = XGrabPointer(app->dpy, grabWindow, ownerEvents, eventMask,
-			    pointerMode, keyboardMode, confineTo, cursor,
-			    CurrentTime);
-      XSync(app->dpy, False);
-      if (GrabSuccess != status) {
-	 char *reason = "reason unknown";
-	 
-	 switch (status) {
-	  case AlreadyGrabbed:
-	    reason = "someone else already has the pointer";
-	    break;
-	  case GrabFrozen:
-	    reason = "someone else has frozen the pointer";
-	    break;
-	  case GrabInvalidTime:
-	    reason = "bad grab time [this shouldn't happen]";
-	    break;
-	  case GrabNotViewable:
-	    reason = "grab not viewable [this shouldn't happen]";
-	    break;
-	 }
-	 fprintf(stderr, "%s: Could not grab pointer (%s)\n",
-		 app->appName, reason);
-	 exitApp(app, EXIT_STATUS_ERROR);
-      }
-   }
+   performGrab(app, GRAB_POINTER, "pointer", app->grabPointer,
+	       &(app->isPointerGrabbed));
 }
 
 void ungrabPointer(AppInfo *app)
@@ -1041,6 +1058,10 @@ void handleKeyPress(AppInfo *app, XKeyEvent *event)
 
 Bool eventIsInsideButton(AppInfo *app, XButtonEvent *event, ButtonInfo button)
 {
+   /* 'gcc -Wall' complains about 'app' being an unused parameter. 
+    * Tough.  We might want to use it later, and then we don't have
+    * to change it in each place it's called.  Performance won't suffer.
+    */
    int status = False;
    
    if ((event->x >= (button.w3.w.x + button.w3.borderWidth)) &&
@@ -1118,6 +1139,13 @@ int main(int argc, char **argv)
    app.appClass = progclass;
    /* For resources.c. */
    db = app.resourceDb;
+   
+   /* Seconds after which keyboard/pointer grab fail. */
+   app.grabFailTimeout = 5;
+   /* Number of seconds to wait between grab attempts. */
+   app.grabRetryInterval = 1;
+   
+   app.pid = getpid();
 
    {
       struct rlimit resourceLimit;
@@ -1125,15 +1153,15 @@ int main(int argc, char **argv)
       
       status = getrlimit(RLIMIT_CORE, &resourceLimit);
       if (-1 == status) {
-	 fprintf(stderr, "%s: getrlimit failed (%s)\n", app.appName,
-		 strerror(errno));
+	 fprintf(stderr, "%s[%ld]: getrlimit failed (%s)\n", app.appName,
+		 (long) app.pid, strerror(errno));
 	 exit(EXIT_STATUS_ERROR);
       }
       resourceLimit.rlim_cur = 0;
       status = setrlimit(RLIMIT_CORE, &resourceLimit);
       if (-1 == status) {
-	 fprintf(stderr, "%s: setrlimit failed (%s)\n", app.appName,
-		 strerror(errno));
+	 fprintf(stderr, "%s[%ld]: setrlimit failed (%s)\n", app.appName,
+		 (long) app.pid, strerror(errno));
 	 exit(EXIT_STATUS_ERROR);
       }
    }
@@ -1165,7 +1193,8 @@ int main(int argc, char **argv)
 	 break;
        case ClientMessage:
 	 if ((32 == event.xclient.format) &&
-	     (event.xclient.data.l[0] == app.wmDeleteWindowAtom)) {
+	     ((unsigned long) event.xclient.data.l[0] ==
+	      app.wmDeleteWindowAtom)) {
 	    cancelAction(&app);
 	 }
 	 break;
@@ -1174,7 +1203,8 @@ int main(int argc, char **argv)
       }
    }
 
-   fprintf(stderr, "%s: This should not happen.\n", app.appName);
+   fprintf(stderr, "%s[%ld]: This should not happen.\n", app.appName,
+	   (long) app.pid);
    return(EXIT_STATUS_ANOMALY);
 }
 

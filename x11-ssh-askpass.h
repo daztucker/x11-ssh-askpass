@@ -1,6 +1,6 @@
 /* x11-ssh-askpass.h:  A generic X11-based password dialog for OpenSSH.
  * created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
- * autodate: 2000-Aug-28 01:29
+ * autodate: 2000-Sep-24 00:37
  * 
  * by Jim Knoble <jmknoble@jmknoble.cx>
  * Copyright (C) 1999,2000 Jim Knoble
@@ -141,6 +141,8 @@ typedef struct
    int argc;
    char **argv;
    
+   pid_t pid;
+   
    char *buf;
    int bufSize;
    int bufIndex;
@@ -170,6 +172,8 @@ typedef struct
    Bool isKeyboardGrabbed;
    Bool isPointerGrabbed;
    Bool isServerGrabbed;
+   unsigned int grabFailTimeout;
+   unsigned int grabRetryInterval;
    
    DialogInfo *dialog;
 } AppInfo;
@@ -200,6 +204,11 @@ void paintIndicator(AppInfo *app, Drawable draw, IndicatorElement indicator);
 void updateIndicatorElement(AppInfo *app, int i);
 void updateIndicators(AppInfo *app, int condition);
 void paintDialog(AppInfo *app);
+
+#define GRAB_KEYBOARD	0
+#define GRAB_POINTER	1
+void performGrab(AppInfo *app, int grabType, char *grabTypeName,
+		 Bool shouldGrab, Bool *isGrabbed);
 
 void grabKeyboard(AppInfo *app);
 void ungrabKeyboard(AppInfo *app);
