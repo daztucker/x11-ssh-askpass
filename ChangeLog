@@ -1,3 +1,13 @@
+2001-02-14 03:59  jmknoble
+
+	* x11-ssh-askpass.c, x11-ssh-askpass.h, x11-ssh-askpass.man.in: Now
+	x11-ssh-askpass understands newline characters ('\n') in text
+	labels (both the prompt string and the button labels).	Each line
+	of text in the label is displayed on a separate line in the dialog.
+	 Requested by Markus Friedl
+	<markus.friedl@informatik.uni-erlangen.de> to support
+	challenge/response authentication in OpenSSH.
+
 2001-02-14 03:49  jmknoble
 
 	* x11-ssh-askpass.c: Bugfix: "*grabServer" resource was setting

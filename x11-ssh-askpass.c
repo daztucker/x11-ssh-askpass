@@ -381,7 +381,7 @@ void createDialog(AppInfo *app)
       get_boolean_resource("grabKeyboard", "GrabKeyboard", True);
    app->grabPointer =
       get_boolean_resource("grabPointer", "GrabPointer", False);
-   app->grabPointer =
+   app->grabServer =
       get_boolean_resource("grabServer", "GrabServer", False);
 
    /* inputTimeout resource specified in seconds for easy human interface.
@@ -430,12 +430,14 @@ void createDialog(AppInfo *app)
       get_integer_resource("verticalSpacing", "Spacing", 6));
    
    if (2 == app->argc) {
-      d->label.text = strdup(app->argv[1]);
+      labelText = strdup(app->argv[1]);
    } else {
-      d->label.text =
+      labelText =
 	 getStringResourceWithDefault("dialog.label", "Dialog.Label",
 				      "Please enter your authentication passphrase:");
    }
+   createLabel(app, labelText, &(d->label));
+   freeIf(labelText);
    d->label.font = getFontResource(app, "dialog.font", "Dialog.Font");
    calcLabelTextExtents(&(d->label));
    d->label.w.foreground = d->w3.w.foreground;
@@ -466,8 +468,10 @@ void createDialog(AppInfo *app)
       get_integer_resource("okButton.horizontalSpacing", "Button.Spacing", 4));
    d->okButton.w3.verticalSpacing = scaleYDimension(app,
       get_integer_resource("okButton.verticalSpacing", "Button.Spacing", 2));
-   d->okButton.label.text =
+   labelText =
       getStringResourceWithDefault("okButton.label", "Button.Label", "OK");
+   createLabel(app, labelText, &(d->okButton.label));
+   freeIf(labelText);
    d->okButton.label.font =
       getFontResource(app, "okButton.font", "Button.Font");
    calcButtonExtents(&(d->okButton));
@@ -503,7 +507,7 @@ void createDialog(AppInfo *app)
    d->cancelButton.w3.verticalSpacing = scaleYDimension(app,
       get_integer_resource("cancelButton.verticalSpacing", "Button.Spacing",
 			   2));
-   d->cancelButton.label.text =
+   labelText =
       getStringResourceWithDefault("cancelButton.label", "Button.Label",
 				   "Cancel");
    d->cancelButton.label.font =

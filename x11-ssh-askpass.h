@@ -1,9 +1,9 @@
 /* x11-ssh-askpass.h:  A generic X11-based password dialog for OpenSSH.
  * created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
- * autodate: 2000-Nov-07 04:53
+ * autodate: 2001-Feb-14 04:00
  * 
  * by Jim Knoble <jmknoble@jmknoble.cx>
- * Copyright (C) 1999,2000 Jim Knoble
+ * Copyright (C) 1999,2000,2001 Jim Knoble
  * 
  * Disclaimer:
  * 
@@ -72,7 +72,7 @@ typedef struct
    Dimension verticalSpacing;
 } Widget3dInfo;
 
-typedef struct
+typedef struct TextObjectStruct
 {
    char *text;
    XFontStruct *font;
