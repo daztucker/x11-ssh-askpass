@@ -41,8 +41,8 @@ TAR		= tar
 
 MAKE_CHANGELOG	= cvs2cl
 
-VERSION		= 1.1.1
-DATE		= November 8, 2000
+VERSION		= 1.2.0
+DATE		= February 14, 2001
 PROJECT		= $(NAME)-$(VERSION)
 TARBALL_DIR	= $(PROJECT)
 TARBALL		= $(PROJECT).tar.gz
