@@ -5,6 +5,14 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-08-28 05:42  jmknoble
+
+	* x11-ssh-askpass.man.in: Changed author email address from
+	pobox.com to jmknoble.cx.  Added 2000 to copyright date.
+
+	* x11-ssh-askpass.man.in: Added man page for x11-ssh-askpass from
+	Matthieu Herrb <matthieu@laas.fr> of OpenBSD.
+
 2000-08-28 05:31  jmknoble
 
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
