@@ -1,3 +1,7 @@
+2000-11-08 23:19  jmknoble
+
+	* Imakefile: New version 1.1.1.
+
 2000-11-07 06:20  jmknoble
 
 	* Imakefile: Bumped version to 1.1.0.
@@ -146,7 +150,7 @@
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
 	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
 	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
-	ISO-8859-1 copyright character '©' to ASCII '(C)'.
+	ISO-8859-1 copyright character 'ï¿½' to ASCII '(C)'.
 
 2000-08-28 01:27  jmknoble
 
