@@ -1,6 +1,6 @@
 ! SshAskpass.ad:  Default resources for the X11-based ssh-askpass for OpenSSH
 ! created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
-! autodate: 2000-Oct-30 05:16
+! autodate: 2000-Nov-07 05:50
 ! 
 ! by Jim Knoble <jmknoble@jmknoble.cx>
 ! Copyright (C) 1999,2000 Jim Knoble
@@ -27,11 +27,11 @@
 ! +--------------------+
 
 *Dialog.font:			-adobe-helvetica-medium-r-normal-*-*-120-*-*-*-*-iso8859-1
-*?.foreground:			#000000
-*?.background:			#a8a8a8
-*topShadowColor:		#ffffff
-*bottomShadowColor:		#545454
-*borderColor:			#202020
+*?.foreground:			rgb:00/00/00
+*?.background:			rgb:a8/a8/a8
+*topShadowColor:		rgb:ff/ff/ff
+*bottomShadowColor:		rgb:54/54/54
+*borderColor:			rgb:20/20/20
 *shadowThickness:		0
 *borderWidth:			1
 *horizontalSpacing:		8
@@ -43,10 +43,10 @@
 *Button.horizontalSpacing:	8
 *Button.verticalSpacing:	3
 
-*Indicator.foreground:		#9bcd9b
-*Indicator.background:		#545454
-*Indicator.topShadowColor:	#ffffff
-*Indicator.bottomShadowColor:	#202020
+*Indicator.foreground:		rgb:9b/cd/9b
+*Indicator.background:		rgb:54/54/54
+*Indicator.topShadowColor:	rgb:ff/ff/ff
+*Indicator.bottomShadowColor:	rgb:20/20/20
 *Indicator.shadowThickness:	1
 *Indicator.borderWidth:		0
 *Indicator.height:		7

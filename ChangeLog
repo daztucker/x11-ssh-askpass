@@ -1,3 +1,10 @@
+2000-11-07 05:23  jmknoble
+
+	* SshAskpass-1337.ad, SshAskpass-NeXTish.ad, SshAskpass-default.ad,
+	SshAskpass-green.ad, SshAskpass-motif.ad: Converted colors from
+	old-style "#rrggbb" to new-style "rgb:rr/gg/bb".  Corrected typo in
+	perspicacious commentary.
+
 2000-10-30 05:28  jmknoble
 
 	* Imakefile: Bumped version to 1.0.3.
@@ -98,7 +105,7 @@
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
 	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
 	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
-	ISO-8859-1 copyright character '©' to ASCII '(C)'.
+	ISO-8859-1 copyright character 'ï¿½' to ASCII '(C)'.
 
 2000-08-28 01:27  jmknoble
 
