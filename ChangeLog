@@ -1,3 +1,8 @@
+2001-02-14 04:07  jmknoble
+
+	* README, x11-ssh-askpass.c, x11-ssh-askpass.h,
+	x11-ssh-askpass.man.in: Updated copyright notices to include 2001.
+
 2001-02-14 04:06  jmknoble
 
 	* Imakefile, README: Moved default BINDIR to

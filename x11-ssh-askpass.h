@@ -75,12 +75,19 @@ typedef struct
 typedef struct TextObjectStruct
 {
    char *text;
-   XFontStruct *font;
    int textLength;
    int direction;
    int ascent;
    int descent;
    XCharStruct overall;
+   struct TextObjectStruct *next;
+} TextObject;
+
+typedef struct
+{
+   char *fullText;
+   XFontStruct *font;
+   TextObject *multiText;
    WidgetInfo w;
 } LabelInfo;
 

@@ -510,6 +510,8 @@ void createDialog(AppInfo *app)
    labelText =
       getStringResourceWithDefault("cancelButton.label", "Button.Label",
 				   "Cancel");
+   createLabel(app, labelText, &(d->cancelButton.label));
+   freeIf(labelText);
    d->cancelButton.label.font =
       getFontResource(app, "cancelButton.font", "Button.Font");
    calcButtonExtents(&(d->cancelButton));
@@ -673,9 +675,8 @@ void createDialog(AppInfo *app)
 			      d->indicator.w3.w.height +
 			      d->okButton.w3.w.height);
       d->w3.w.height = d->w3.interiorHeight + (2 * d->w3.shadowThickness);
-      d->label.w.y = (d->w3.shadowThickness + d->w3.verticalSpacing +
-		      d->label.ascent);
-      d->indicator.w3.w.y = (d->label.w.y + d->label.descent +
+      d->label.w.y = d->w3.shadowThickness + d->w3.verticalSpacing;
+      d->indicator.w3.w.y = (d->label.w.y + d->label.w.height +
 			     d->w3.verticalSpacing +
 			     d->indicator.w3.verticalSpacing);
       for (i = 0; i < d->indicator.count; i++) {
@@ -695,19 +696,33 @@ void createDialog(AppInfo *app)
    app->dialog = d;
 }
 
+void destroyLabel(AppInfo *app, LabelInfo *label)
+{
+   TextObject *thisTextObject;
+   TextObject *nextTextObject;
+   
+   thisTextObject = label->multiText;
+   nextTextObject = thisTextObject->next;
+   freeIf(thisTextObject);
+   while (NULL != nextTextObject) {
+      thisTextObject = nextTextObject;
+      nextTextObject = thisTextObject->next;
+      freeIf(thisTextObject);
+   }
+   freeIf(label->fullText);
+   freeFontIf(app, label->font);
+}
+
 void destroyDialog(AppInfo *app)
 {
    DialogInfo *d = app->dialog;
    
    freeIf(d->title);
-   freeIf(d->label.text);
-   freeIf(d->okButton.label.text);
-   freeIf(d->cancelButton.label.text);
    freeIf(d->indicators);
-   
-   freeFontIf(app, d->label.font);
-   freeFontIf(app, d->okButton.label.font);
-   freeFontIf(app, d->cancelButton.label.font);
+
+   destroyLabel(app, &(d->label));
+   destroyLabel(app, &(d->okButton.label));
+   destroyLabel(app, &(d->cancelButton.label));
    
    XFree(d->sizeHints);
    XFree(d->wmHints);
@@ -853,14 +868,31 @@ void destroyGCs(AppInfo *app)
 
 void paintLabel(AppInfo *app, Drawable draw, LabelInfo label)
 {
-   if (!(label.text)) {
+   TextObject *t;
+   Position x;
+   Position y;
+
+   if (!(label.fullText)) {
       return;
    }
    XSetForeground(app->dpy, app->textGC, label.w.foreground);
    XSetBackground(app->dpy, app->textGC, label.w.background);
    XSetFont(app->dpy, app->textGC, label.font->fid);
-   XDrawString(app->dpy, draw, app->textGC, label.w.x, label.w.y, label.text,
-	       label.textLength);
+   
+   t = label.multiText;
+   x = label.w.x;
+   y = label.w.y + t->ascent;
+   while (NULL != t) {
+      if (t->text) {
+	 XDrawString(app->dpy, draw, app->textGC, x, y, t->text,
+		     t->textLength);
+      }
+      y += t->descent;
+      t = t->next;
+      if (t) {
+	 y += t->ascent;
+      }
+   }
 }
 
 void paintButton(AppInfo *app, Drawable draw, ButtonInfo button)
