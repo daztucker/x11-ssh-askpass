@@ -5,6 +5,10 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-09-24 04:32  jmknoble
+
+	* resources.c: Removed unused declaration of get_time_resource.
+
 2000-08-28 07:35  jmknoble
 
 	* Imakefile, TODO: Added TODO file for listing potential future
@@ -47,7 +51,7 @@
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
 	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
 	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
-	ISO-8859-1 copyright character '©' to ASCII '(C)'.
+	ISO-8859-1 copyright character 'ï¿½' to ASCII '(C)'.
 
 2000-08-28 05:27  jmknoble
 
