@@ -5,6 +5,12 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-10-30 05:27  jmknoble
+
+	* x11-ssh-askpass.man.in: Documented the new resources for
+	pseudo-resolution-independence (defaultXResolution,
+	defaultYResolution, xResolutionFuzz, and yResolutionFuzz).
+
 2000-10-30 05:25  jmknoble
 
 	* x11-ssh-askpass.c, x11-ssh-askpass.h: Added a small amount of
