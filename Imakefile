@@ -1,6 +1,6 @@
 XCOMM Imakefile: How to build x11-ssh-askpass, using xmkmf and then make
 XCOMM 
-XCOMM by Jim Knoble <jmknoble@jmknoble.cx>
+XCOMM by Jim Knoble <jmknoble@pobox.com>
 XCOMM Copyright (C) 1999,2000,2001 Jim Knoble
 XCOMM 
 XCOMM Disclaimer:
@@ -29,7 +29,7 @@ MANDIR		= $(MANPATH)/man1
 APPDEFDIR	= $(XAPPLOADDIR)
 APP_DEFAULTS	= SshAskpass-default.ad
 
-XCOMM CC		=
+CC		= egcs -pipe
 XCOMM CDEBUGFLAGS	=
 XCOMM LOCAL_LDFLAGS	=
 XCOMM -------- end configurable settings --------
@@ -72,8 +72,8 @@ TAR		= tar
 
 MAKE_CHANGELOG	= cvs2cl
 
-VERSION		= 1.2.2
-DATE		= April 2, 2001
+VERSION		= 1.2.4
+DATE		= September 16, 2001
 PROJECT		= $(NAME)-$(VERSION)
 DIST_DIR	= $(PROJECT)
 DIST		= $(PROJECT).tar.gz
@@ -160,7 +160,7 @@ install.man::
 	fi
 	$(LN) $(NAME).$(MANSUFFIX) $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX)
 
-.PHONY: depends changelog realclean distclean spotless tar dist
+.PHONY: depends changelog realclean squeakyclean spotless tar dist
 
 all:: $(MAN_OBJ)
 
@@ -197,10 +197,10 @@ realclean: clean
 	-$(RM) $(CLASS).ad
 	-$(RM) *.LOG *.log
 
-distclean: realclean
+squeakyclean: realclean
 	-$(RM) Makefile Makefile.bak $(IMAKEFILE_OBJ) $(CHANGELOG)
 
-spotless: distclean
+spotless: squeakyclean
 	-$(RM) $(DIST)
 
 tar: dist

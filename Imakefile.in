@@ -200,7 +200,7 @@ realclean: clean
 squeakyclean: realclean
 	-$(RM) Makefile Makefile.bak $(IMAKEFILE_OBJ) $(CHANGELOG)
 
-spotless: distclean
+spotless: squeakyclean
 	-$(RM) $(DIST)
 
 tar: dist
