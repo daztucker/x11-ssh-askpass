@@ -3,21 +3,46 @@ CLASS		= SshAskpass
 
 BINDIR		= /usr/local/libexec/ssh
 
+#ifndef CpCmd
+# define CpCmd cp
+#endif
+
+#ifndef GzipCmd
+# define GzipCmd gzip
+#endif
+
+#ifndef LnCmd
+# if HasSymLinks
+#  define LnCmd ln -s
+# else
+#  define LnCmd ln
+# endif
+#endif
+
+#ifndef MvCmd
+# define MvCmd mv -f
+#endif
+
+#ifndef RmCmd
+# define RmCmd rm -f
+#endif
+
 CAT		= cat
-CHMOD		= chmod -c
-CP		= cp -df
+CHMOD		= chmod
+CP		= CpCmd
 GREP		= grep
-GZIP		= gzip
-LN		= ln -sf
-MKDIR		= mkdir -p
-MV		= mv -f
-RM		= rm -f
+GZIP		= GzipCmd
+LN		= LnCmd
+MKDIR		= MkdirHierCmd
+MV		= MvCmd
+RM		= RmCmd
 SED		= sed
 TAR		= tar
 
 MAKE_CHANGELOG	= cvs2cl
 
-VERSION		= 1.0
+VERSION		= 1.0.1
+DATE		= August 28, 2000
 PROJECT		= $(NAME)-$(VERSION)
 TARBALL_DIR	= $(PROJECT)
 TARBALL		= $(PROJECT).tar.gz
@@ -44,6 +69,7 @@ EXTRAS = \@@\
  ChangeLog \@@\
  Imakefile \@@\
  README \@@\
+ TODO \@@\
  $(CLASS)-1337.ad \@@\
  $(CLASS)-NeXTish.ad \@@\
  $(CLASS)-green.ad \@@\

@@ -5,6 +5,19 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-08-28 05:17  jmknoble
+
+	* Imakefile: Portability enhancements to Imakefile, suggested by
+	Charles Levert <charles@comm.polymtl.ca>.   Use imake's '...Cmd'
+	macros where available; otherwise, use less-nonportable commands.
+	
+	Bumped version to 1.0.1.
+
+	* x11-ssh-askpass.c: Oops.  When the keyboard or pointer grab
+	failed, the fprintf() calls to print the error message were missing
+	the 'reason' argument.	Thanks to Daniel Packman
+	<pack@mop2.eos.ucar.edu>.
+
 2000-01-07 09:52  jmknoble
 
 	* Imakefile: Now we install the actual program as
