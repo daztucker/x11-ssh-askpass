@@ -73,13 +73,17 @@
 ! that's right---millimeters!!!  The right hand managed to slip that
 ! one in while the left hand was adding a '-dpi' switch to the sample
 ! server implementation.  I think both left feet were adding the
-! RESOLUTION_X and RESOLUTION_Y fields (in dots per inch, naturally)
-! to the X Logical Font Description.  The irony is underwhelming.
+! RESOLUTION_X and RESOLUTION_Y fields [in dots per inch, naturally]
+! to the X Logical Font Description.  The irony is underwhelming.)
 
 *defaultXResolution:		75/in
 *defaultYResolution:		75/in
 *xResolutionFuzz:		20/in
 *yResolutionFuzz:		20/in
+
+! Number of seconds to wait for a key- or button-press
+! before giving up.  '0' means wait forever.
+*inputTimeout:			0
 
 ! Ssh-askpass grabs the keyboard by default.
 ! To stop it from grabbing the keyboard, use:

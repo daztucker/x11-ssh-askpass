@@ -1,3 +1,9 @@
+2000-11-07 06:16  jmknoble
+
+	* SshAskpass-1337.ad, SshAskpass-NeXTish.ad, SshAskpass-default.ad,
+	SshAskpass-green.ad, SshAskpass-motif.ad: Added new '*inputTimeout'
+	resource, with explanatory comment.
+
 2000-11-07 06:15  jmknoble
 
 	* x11-ssh-askpass.c: Fixed a few warnings, commented another. 
