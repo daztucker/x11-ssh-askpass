@@ -5,6 +5,13 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-08-28 05:31  jmknoble
+
+	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
+	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
+	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
+	ISO-8859-1 copyright character '�' to ASCII '(C)'.
+
 2000-08-28 05:27  jmknoble
 
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,

@@ -900,7 +900,8 @@ void grabPointer(AppInfo *app)
 	    reason = "grab not viewable [this shouldn't happen]";
 	    break;
 	 }
-	 fprintf(stderr, "%s: Could not grab pointer (%s)\n", app->appName);
+	 fprintf(stderr, "%s: Could not grab pointer (%s)\n",
+		 app->appName, reason);
 	 exitApp(app, EXIT_STATUS_ERROR);
       }
    }
@@ -1099,9 +1100,6 @@ int main(int argc, char **argv)
 
    memset(&app, 0, sizeof(app));
    
-   app.argc = argc;
-   app.argv = argv;
-
    progclass = "SshAskpass";
    app.toplevelShell = XtAppInitialize(&(app.appContext), progclass,
 					NULL, 0, &argc, argv,
