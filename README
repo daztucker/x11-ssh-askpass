@@ -1,6 +1,6 @@
 # README: Notes about X11-based passphrase dialog for OpenSSH
 # created 1999-Nov-21 jmk
-# autodate: 2000-Jan-07 04:53
+# autodate: 2000-Aug-28 03:29
 
 +-------------+
 | Description |
@@ -8,9 +8,9 @@
 
 This is an X11-based passphrase dialog for use with OpenSSH.  It is
 intended to replace the Perl/Tk-based ssh-askpass dialog and
-GNOME-based ssh-askpass dialog which accompany OpenSSH-1.2.  These
-dialogs are intended to be called from the ssh-add program and not
-invoked directly.
+GNOME-based ssh-askpass dialog which formerly accompanied OpenSSH-1.2.
+These dialogs are intended to be called from the ssh-add program and
+not invoked directly.
 
 The features of x11-ssh-askpass are as follows:
 
