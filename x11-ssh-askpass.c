@@ -1,9 +1,9 @@
 /* x11-ssh-askpass.c:  A generic X11-based password dialog for OpenSSH.
  * created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
- * autodate: 2000-Nov-08 23:14
+ * autodate: 2001-Feb-14 04:00
  * 
  * by Jim Knoble <jmknoble@jmknoble.cx>
- * Copyright (C) 1999,2000 Jim Knoble
+ * Copyright (C) 1999,2000,2001 Jim Knoble
  * 
  * Disclaimer:
  * 
@@ -217,17 +217,31 @@ long getResolutionResource(AppInfo *app, char *instanceName, char *className,
 }
 #undef DefaultResolution
 
-void calcLabelTextExtents(LabelInfo *label)
-{
-   if ((!label) || (!(label->text)) || (!(label->font))) {
+void calcTextObjectExtents(TextObject *t, XFontStruct *font) {
+   if ((!t) || (!(t->text))) {
       return;
    }
-   label->textLength = strlen(label->text);
-   XTextExtents(label->font, label->text, label->textLength,
-		&(label->direction), &(label->ascent), &(label->descent),
-		&(label->overall));
-   label->w.height = label->descent + label->ascent;
-   label->w.width = label->overall.width;
+   t->textLength = strlen(t->text);
+   XTextExtents(font, t->text, t->textLength, &(t->direction),
+		&(t->ascent), &(t->descent), &(t->overall));
+}
+
+void calcLabelTextExtents(LabelInfo *label)
+{
+   TextObject *t;
+   
+   if ((!label) || (!(label->fullText)) || (!(label->font))) {
+      return;
+   }
+   t = label->multiText;
+   while (NULL != t) {
+      calcTextObjectExtents(t, label->font);
+      label->w.height += (t->ascent + t->descent);
+      if (label->w.width < t->overall.width) {
+	 label->w.width = t->overall.width;
+      }
+      t = t->next;
+   }
 }
 
 void calcTotalButtonExtents(ButtonInfo *button)
@@ -277,8 +291,7 @@ void calcButtonLabelPosition(ButtonInfo *button)
    button->label.w.x = button->w3.w.x +
       ((button->w3.w.width - button->label.w.width) / 2);
    button->label.w.y = button->w3.w.y +
-      ((button->w3.w.height - button->label.w.height) / 2)
-      + button->label.ascent;
+      ((button->w3.w.height - button->label.w.height) / 2);
 }
 
 Dimension scaleXDimension(AppInfo *app, Dimension unscaled)
@@ -311,9 +324,49 @@ Dimension scaleYDimension(AppInfo *app, Dimension unscaled)
    return(scaled);
 }
 
+/* Assumes 's' is non-NULL. */
+TextObject *createTextObject(AppInfo *app, char *s)
+{
+   TextObject *t = malloc(sizeof(*t));
+   if (NULL == t) {
+      outOfMemory(app, __LINE__);
+   }
+   memset(t, 0, sizeof(*t));
+   if (('\n' == *s) || ('\0' == *s)) {
+      t->text = " ";
+   } else {
+      t->text = s;
+   }
+   return(t);
+}
+
+/* Assumes 'label' object exists and is zeroed. */
+void createLabel(AppInfo *app, char *text, LabelInfo *label)
+{
+   char *substring;
+   TextObject *t;
+   
+   if ((!app) || (!text)) {
+      return;
+   }
+   label->fullText = strdup(text);
+   label->multiText = createTextObject(app, label->fullText);
+   t = label->multiText;
+   substring = strchr(label->fullText, '\n');
+   while (NULL != substring) {
+      *(substring++) = '\0';
+      t->next = createTextObject(app, substring);
+      if (t->next) {
+	 t = t->next;
+      }
+      substring = strchr(substring, '\n');
+   }
+}
+
 void createDialog(AppInfo *app)
 {
    DialogInfo *d;
+   char *labelText;
    
    if (app->dialog) {
       return;
