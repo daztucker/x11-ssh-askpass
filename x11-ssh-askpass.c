@@ -1176,11 +1176,12 @@ void handleKeyPress(AppInfo *app, XEvent *event)
    char s[2];
    int n;
    
-   if (event->send_event) {
+   if (event->xkey.send_event) {
       /* Pay no attention to synthetic key events. */
       return;
    }
-   n = XLookupString(event, s, 1, NULL, NULL);
+   cancelInputTimeout(app);
+   n = XLookupString(&(event->xkey), s, 1, NULL, NULL);
    
    if (1 != n) {
       return;
@@ -1208,30 +1209,45 @@ void handleKeyPress(AppInfo *app, XEvent *event)
    }
 }
 
-Bool eventIsInsideButton(AppInfo *app, XButtonEvent *event, ButtonInfo button)
+Bool eventIsInsideButton(AppInfo *app, XEvent *event, ButtonInfo button)
 {
    /* 'gcc -Wall' complains about 'app' being an unused parameter. 
     * Tough.  We might want to use it later, and then we don't have
     * to change it in each place it's called.  Performance won't suffer.
     */
    int status = False;
+   int x, y;
    
-   if ((event->x >= (button.w3.w.x + button.w3.borderWidth)) &&
-       (event->x < (button.w3.w.x + button.w3.w.width -
-		    (2 * button.w3.borderWidth))) &&
-       (event->y >= (button.w3.w.y + button.w3.borderWidth)) &&
-       (event->y < (button.w3.w.y + button.w3.w.height -
-		    (2 * button.w3.borderWidth)))) {
+   switch(event->type) {
+    case ButtonPress:
+    case ButtonRelease:
+      x = event->xbutton.x;
+      y = event->xbutton.y;
+      break;
+    case MotionNotify:
+      x = event->xmotion.x;
+      y = event->xmotion.y;
+      break;
+    default:
+      return(False);
+   }
+   if ((x >= (button.w3.w.x + button.w3.borderWidth)) &&
+       (x < (button.w3.w.x + button.w3.w.width -
+	     (2 * button.w3.borderWidth))) &&
+       (y >= (button.w3.w.y + button.w3.borderWidth)) &&
+       (y < (button.w3.w.y + button.w3.w.height -
+	     (2 * button.w3.borderWidth)))) {
       status = True;
    }
    return(status);
 }
 
-void handleButtonPress(AppInfo *app, XButtonEvent *event)
+void handleButtonPress(AppInfo *app, XEvent *event)
 {
    DialogInfo *d = app->dialog;
-   
-   if (event->button != Button1) {
+
+   cancelInputTimeout(app);
+   if (event->xbutton.button != Button1) {
       return;
    }
    if (ButtonPress == event->type) {
@@ -1251,18 +1267,77 @@ void handleButtonPress(AppInfo *app, XButtonEvent *event)
 	 if (eventIsInsideButton(app, event, d->okButton)) {
 	    acceptAction(app);
 	 } else {
-	    d->okButton.pressed = False;
-	    paintButton(app, d->dialogWindow, d->okButton);
+	    if (d->okButton.pressed) {
+	       d->okButton.pressed = False;
+	       paintButton(app, d->dialogWindow, d->okButton);
+	    }
 	 }
       } else if (CANCEL_BUTTON == d->pressedButton) {
 	 if (eventIsInsideButton(app, event, d->cancelButton)) {
 	    cancelAction(app);
 	 } else {
+	    if (d->cancelButton.pressed) {
+	       d->cancelButton.pressed = False;
+	       paintButton(app, d->dialogWindow, d->cancelButton);
+	    }
+	 }
+      }
+      d->pressedButton = NO_BUTTON;
+   }
+}
+
+void handlePointerMotion(AppInfo *app, XEvent *event)
+{
+   DialogInfo *d = app->dialog;
+   
+   if (NO_BUTTON == d->pressedButton) {
+      return;
+   } else if (OK_BUTTON == d->pressedButton) {
+      if (eventIsInsideButton(app, event, d->okButton)) {
+	 if (!(d->okButton.pressed)) {
+	    d->okButton.pressed = True;
+	    paintButton(app, d->dialogWindow, d->okButton);
+	 }
+      } else {
+	 if (d->okButton.pressed) {
+	    d->okButton.pressed = False;
+	    paintButton(app, d->dialogWindow, d->okButton);
+	 }
+      }
+   } else if (CANCEL_BUTTON == d->pressedButton) {
+      if (eventIsInsideButton(app, event, d->cancelButton)) {
+	 if (!(d->cancelButton.pressed)) {
+	    d->cancelButton.pressed = True;
+	    paintButton(app, d->dialogWindow, d->cancelButton);
+	 }
+      } else {
+	 if (d->cancelButton.pressed) {
 	    d->cancelButton.pressed = False;
 	    paintButton(app, d->dialogWindow, d->cancelButton);
 	 }
       }
-      d->pressedButton = NO_BUTTON;
+   }
+}
+
+void handleInputTimeout(XtPointer data, XtIntervalId *timerId)
+{
+   /* 'gcc -Wall' complains about 'timerId' being an unused parameter.
+    * Tough.  Xt forces us to have it here.  Like it.
+    */
+   AppInfo *app = (AppInfo *) data;
+   if (app->inputTimeoutActive) {
+      app->inputTimeoutActive = False;
+      fprintf(stderr, "%s[%ld]: *Yawn*...timed out after %lu seconds.\n",
+	      app->appName, (long) app->pid, (app->inputTimeout / 1000));
+      exitApp(app, EXIT_STATUS_TIMEOUT);
+   }
+}
+
+void cancelInputTimeout(AppInfo *app)
+{
+   if (app->inputTimeoutActive) {
+      app->inputTimeoutActive = False;
+      XtRemoveTimeOut(app->inputTimeoutTimerId);
    }
 }
 
@@ -1325,12 +1400,27 @@ int main(int argc, char **argv)
    
    createDialog(&app);
    createGCs(&app);
+   
+   app.eventMask = 0;
+   app.eventMask |= ExposureMask;
+   app.eventMask |= ButtonPressMask;
+   app.eventMask |= ButtonReleaseMask;
+   app.eventMask |= Button1MotionMask;
+   app.eventMask |= KeyPressMask;
+
    createDialogWindow(&app);
    
    XMapWindow(app.dpy, app.dialog->dialogWindow);
+   if (app.inputTimeout > 0) {
+      app.inputTimeoutActive = True;
+      app.inputTimeoutTimerId =
+	 XtAppAddTimeOut(app.appContext, app.inputTimeout,
+			 handleInputTimeout, (XtPointer) &app);
+   }
+
    
    while(True) {
-      XNextEvent(app.dpy, &event);
+      XtAppNextEvent(app.appContext, &event);
       switch (event.type) {
        case Expose:
 	 grabServer(&app);
@@ -1343,10 +1433,12 @@ int main(int argc, char **argv)
 	 break;
        case ButtonPress:
        case ButtonRelease:
-	 handleButtonPress(&app, &(event.xbutton));
+	 handleButtonPress(&app, &event);
 	 break;
+       case MotionNotify:
+	 handlePointerMotion(&app, &event);
        case KeyPress:
-	 handleKeyPress(&app, &(event.xkey));
+	 handleKeyPress(&app, &event);
 	 break;
        case ClientMessage:
 	 if ((32 == event.xclient.format) &&

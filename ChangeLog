@@ -1,5 +1,11 @@
 2000-11-07 06:15  jmknoble
 
+	* x11-ssh-askpass.c: Fixed a few warnings, commented another. 
+	Print message to stderr when we time out, so as not to completely
+	confuse the user.
+
+2000-11-07 06:15  jmknoble
+
 	* x11-ssh-askpass.man.in: Documented new '*inputTimeout' resource.
 
 2000-11-07 05:42  jmknoble
