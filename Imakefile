@@ -124,27 +124,32 @@ $(CLASS).ad:
 	$(LN) $(APP_DEFAULTS) $(CLASS).ad
 
 $(CLASS)_ad.h: $(CLASS).ad
-	$(SED) -n '/^[^!]/s/.*/"&",/p' <$(CLASS).ad >$@
+	$(SED) -n '/^[^!]/s/.*/"&",/p' <$(CLASS).ad >$@.tmp
+	$(MV) $@.tmp $@
 
 changelog:
 	$(MAKE_CHANGELOG)
 
 clean::
-	-$(RM) $(CLASS)_ad.h
+	-$(RM) $(CLASS)_ad.h $(NAME).man
 
 realclean: clean
 	-$(RM) $(CLASS).ad
 
-spotless: realclean
+distclean: realclean
 	-$(RM) Makefile Makefile.bak ChangeLog
 
-tar: changelog
+spotless: distclean
+	-$(RM) $(TARBALL)
+
+tar: dist
+dist: changelog
 	-$(RM) -r $(TARBALL_DIR)
 	$(MKDIR) $(TARBALL_DIR)
 	$(CP) $(EXTRAS) $(SRCS) $(HDRS) $(TARBALL_DIR)/
 	$(CHMOD) -R u+rwX,go+rX,go-w $(TARBALL_DIR)
 	-$(RM) $(TARBALL).bak
 	-$(MV) $(TARBALL) $(TARBALL).bak
-	$(TAR) -cvf - $(TARBALL_DIR) |$(GZIP) -9 -c >$(TARBALL)
+	$(TAR) -cvvf - $(TARBALL_DIR) |$(GZIP) -9 -c >$(TARBALL)
 	-$(RM) -r $(TARBALL_DIR)
 
