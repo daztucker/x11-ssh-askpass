@@ -1,3 +1,7 @@
+2001-04-01 19:21  jmknoble
+
+	* dynlist.c: Updated copyright date.
+
 2001-04-01 17:43  jmknoble
 
 	* TODO, dynlist.c: (Sigh).  I give in.	Modified dynlist.c to work

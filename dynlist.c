@@ -38,7 +38,11 @@ int append_to_list(char ***list_ptr, int *list_len, int *i, char *item)
    if (*i >= *list_len)
     {
        *list_len += LIST_CHUNK_SIZE;
-       tmp_ptr = realloc(*list_ptr, (sizeof(**list_ptr) * *list_len));
+       if (NULL == *list_ptr) {
+	  tmp_ptr = malloc(sizeof(**list_ptr) * *list_len);
+       } else {
+	  tmp_ptr = realloc(*list_ptr, (sizeof(**list_ptr) * *list_len));
+       }
        if (NULL == tmp_ptr)
 	{
 	   return(APPEND_FAILURE);
@@ -58,7 +62,11 @@ int append_to_buf(char **buf, int *buflen, int *i, int c)
    if (*i >= *buflen)
     {
        *buflen += BUF_CHUNK_SIZE;
-       tmp_buf = realloc(*buf, (sizeof(**buf) * *buflen));
+       if (NULL == *buf) {
+	  tmp_buf = malloc(sizeof(**buf) * *buflen);
+       } else {
+	  tmp_buf = realloc(*buf, (sizeof(**buf) * *buflen));
+       }
        if (NULL == tmp_buf)
 	{
 	   return(APPEND_FAILURE);
