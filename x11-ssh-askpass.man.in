@@ -34,6 +34,8 @@ See
 .Pp
 If exactly one non-option argument is provided on the command line, it
 is displayed in the dialog instead of the default label.
+If the argument contains newline characters ('\\n'), each line of text
+is displayed on a separate line in the dialog.
 .Pp
 The features of
 .Nm
