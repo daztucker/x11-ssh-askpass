@@ -2,6 +2,11 @@
 
 	* Imakefile: Bumped version to 1.1.0.
 
+2000-11-07 06:20  jmknoble
+
+	* TODO: Added notes about recently done stuff (that's what todo
+	lists are for, isn't it?;).
+
 2000-11-07 06:16  jmknoble
 
 	* SshAskpass-1337.ad, SshAskpass-NeXTish.ad, SshAskpass-default.ad,
@@ -10,13 +15,13 @@
 
 2000-11-07 06:15  jmknoble
 
-	* x11-ssh-askpass.c: Fixed a few warnings, commented another. 
-	Print message to stderr when we time out, so as not to completely
-	confuse the user.
+	* x11-ssh-askpass.man.in: Documented new '*inputTimeout' resource.
 
 2000-11-07 06:15  jmknoble
 
-	* x11-ssh-askpass.man.in: Documented new '*inputTimeout' resource.
+	* x11-ssh-askpass.c: Fixed a few warnings, commented another. 
+	Print message to stderr when we time out, so as not to completely
+	confuse the user.
 
 2000-11-07 05:42  jmknoble
 
@@ -141,7 +146,7 @@
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
 	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
 	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
-	ISO-8859-1 copyright character 'ï¿½' to ASCII '(C)'.
+	ISO-8859-1 copyright character '©' to ASCII '(C)'.
 
 2000-08-28 01:27  jmknoble
 
