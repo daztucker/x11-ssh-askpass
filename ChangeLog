@@ -1,3 +1,7 @@
+2001-04-01 20:12  jmknoble
+
+	* configure: Slightly improved instructions at end.
+
 2001-04-01 19:56  jmknoble
 
 	* Imakefile, Imakefile.in, configure: Added capability to detect
