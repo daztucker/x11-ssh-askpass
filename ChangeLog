@@ -1,3 +1,9 @@
+2001-02-14 04:06  jmknoble
+
+	* Imakefile, README: Moved default BINDIR to
+	/usr/local/libexec/openssh to conform with recent releases of
+	portable OpenSSH.
+
 2001-02-14 03:59  jmknoble
 
 	* x11-ssh-askpass.c, x11-ssh-askpass.h, x11-ssh-askpass.man.in: Now

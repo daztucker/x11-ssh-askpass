@@ -1,7 +1,7 @@
 NAME		= x11-ssh-askpass
 CLASS		= SshAskpass
 
-BINDIR		= /usr/local/libexec/ssh
+BINDIR		= /usr/local/libexec/openssh
 
 #ifndef CpCmd
 # define CpCmd cp

@@ -1,6 +1,6 @@
 # README: Notes about X11-based passphrase dialog for OpenSSH
 # created 1999-Nov-21 jmk
-# autodate: 2000-Aug-28 03:29
+# autodate: 2001-Feb-14 04:07
 
 +-------------+
 | Description |
@@ -58,10 +58,10 @@ procedure:
   make install
   make install.man
 
-x11-ssh-askpass installs by default in /usr/local/libexec/ssh/.  To
-install it somewhere else (for example, /usr/libexec/ssh/) use:
+x11-ssh-askpass installs by default in /usr/local/libexec/openssh/.  To
+install it somewhere else (for example, /usr/libexec/openssh/) use:
 
-  make install BINDIR=/usr/libexec/ssh
+  make install BINDIR=/usr/libexec/openssh
 
 Several different app-defaults files accompany x11-ssh-askpass:
 
