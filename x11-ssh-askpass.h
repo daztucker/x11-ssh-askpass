@@ -1,6 +1,6 @@
 /* x11-ssh-askpass.h:  A generic X11-based password dialog for OpenSSH.
  * created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
- * autodate: 2000-Sep-24 00:37
+ * autodate: 2000-Oct-30 03:28
  * 
  * by Jim Knoble <jmknoble@jmknoble.cx>
  * Copyright (C) 1999,2000 Jim Knoble
@@ -153,6 +153,14 @@ typedef struct
    Pixel black;
    Pixel white;
    Colormap colormap;
+
+   /* Resolution measurements are normalized to dots/meter. */
+   long xResolution;
+   long yResolution;
+   long defaultXResolution;
+   long defaultYResolution;
+   long xFuzz;
+   long yFuzz;
    
    XtAppContext appContext;
    Widget toplevelShell;
@@ -185,12 +193,17 @@ void freeFontIf(AppInfo *app, XFontStruct *f);
 XFontStruct *getFontResource(AppInfo *app, char *instanceName, char *className);
 char *getStringResourceWithDefault(char *instanceName, char *className,
 				   char *defaultText);
+long getResolutionResource(char *instanceName, char *className,
+			   char *defaultResolutionSpec);
 
 void calcLabelTextExtents(LabelInfo *label);
 void calcTotalButtonExtents(ButtonInfo *button);
 void calcButtonExtents(ButtonInfo *button);
 void balanceButtonExtents(ButtonInfo *button1, ButtonInfo *button2);
 void calcButtonLabelPosition(ButtonInfo *button);
+
+Dimension scaleXDimension(AppInfo *app, Dimension unscaled);
+Dimension scaleYDimension(AppInfo *app, Dimension unscaled);
 
 void createDialog(AppInfo *app);
 void destroyDialog(AppInfo *app);

@@ -1,6 +1,6 @@
 /* x11-ssh-askpass.c:  A generic X11-based password dialog for OpenSSH.
  * created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
- * autodate: 2000-Sep-24 00:07
+ * autodate: 2000-Oct-30 04:04
  * 
  * by Jim Knoble <jmknoble@jmknoble.cx>
  * Copyright (C) 1999,2000 Jim Knoble
@@ -34,6 +34,7 @@
  * provisions as those of the xscreensaver code.
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -122,6 +123,52 @@ char *getStringResourceWithDefault(char *instanceName, char *className,
    return(s);
 }
 
+/* Default resolution is 75 dots/inch.  1 in = 2.54 cm. */
+#define DefaultResolution (75 * 10000 / 254)
+long getResolutionResource(char *instanceName, char *className,
+			   char *defaultResolutionSpec)
+{
+   char units[3];
+   char *s;
+   int n;
+   long resolution;
+   int i;
+   
+   memset(units, 0, sizeof(units));
+   s = getStringResourceWithDefault(instanceName, className,
+				    defaultResolutionSpec);
+   /* NOTE: The width of the %s format must be one less than
+    * the length of the units[] array above!
+    */
+   n = sscanf(s, "%ld / %2s", &resolution, &units);
+   if (n != 2) {
+      resolution = DefaultResolution;
+   } else {
+      if (resolution < 0) {
+	 /* Resolution specifications should not be negative. */
+	 resolution = -(resolution);
+      }
+      for (i = 0; i < (sizeof(units) - 1); i++) {
+	 units[i] = tolower(units[i]);
+      }
+      if ((0 == strcmp(units, "in")) ||
+	  (0 == strcmp(units, "i")) ||
+	  (0 == strcmp(units, "\""))) {
+	 /* dots/inch */
+	 resolution = resolution * 10000 / 254;
+      } else if ((0 == strcmp(units, "m")) ||
+		 (0 == strcmp(units, "me"))) {
+	 /* dots/meter; no conversion necessary */
+	 ;
+      } else {
+	 /* some unit we don't recognize; cringe and stare at the floor */
+	 resolution = DefaultResolution;
+      }
+   }
+   return(resolution);
+}
+#undef DefaultResolution
+
 void calcLabelTextExtents(LabelInfo *label)
 {
    if ((!label) || (!(label->text)) || (!(label->font))) {
@@ -186,6 +233,36 @@ void calcButtonLabelPosition(ButtonInfo *button)
       + button->label.ascent;
 }
 
+Dimension scaleXDimension(AppInfo *app, Dimension unscaled)
+{
+   Dimension scaled;
+   
+   if (((app->defaultXResolution < app->xResolution) &&
+	((app->defaultXResolution + app->xFuzz) < app->xResolution)) ||
+       ((app->xResolution < app->defaultXResolution) &&
+	((app->xResolution + app->xFuzz) < app->defaultXResolution))) {
+      scaled = (unscaled * app->xResolution) / app->defaultXResolution;
+   } else {
+      scaled = unscaled;
+   }
+   return(scaled);
+}
+
+Dimension scaleYDimension(AppInfo *app, Dimension unscaled)
+{
+   Dimension scaled;
+   
+   if (((app->defaultYResolution < app->yResolution) &&
+	((app->defaultYResolution + app->yFuzz) < app->yResolution)) ||
+       ((app->yResolution < app->defaultYResolution) &&
+	((app->yResolution + app->yFuzz) < app->defaultYResolution))) {
+      scaled = (unscaled * app->yResolution) / app->defaultYResolution;
+   } else {
+      scaled = unscaled;
+   }
+   return(scaled);
+}
+
 void createDialog(AppInfo *app)
 {
    DialogInfo *d;
@@ -205,6 +282,17 @@ void createDialog(AppInfo *app)
       get_boolean_resource("grabPointer", "GrabPointer", False);
    app->grabPointer =
       get_boolean_resource("grabServer", "GrabServer", False);
+   
+   app->defaultXResolution =
+      getResolutionResource("defaultXResolution", "DefaultXResolution",
+			    "75/in");
+   app->defaultYResolution =
+      getResolutionResource("defaultYResolution", "DefaultYResolution",
+			    "75/in");
+   app->xFuzz =
+      getResolutionResource("xResolutionFuzz", "XResolutionFuzz", "20/in");
+   app->yFuzz =
+      getResolutionResource("yResolutionFuzz", "YResolutionFuzz", "20/in");
    
    d->title =
       getStringResourceWithDefault("dialog.title", "Dialog.Title",
@@ -229,10 +317,10 @@ void createDialog(AppInfo *app)
    d->w3.borderWidth =
       get_integer_resource("borderWidth", "BorderWidth", 1);
    
-   d->w3.horizontalSpacing =
-      get_integer_resource("horizontalSpacing", "Spacing", 5);
-   d->w3.verticalSpacing =
-      get_integer_resource("verticalSpacing", "Spacing", 6);
+   d->w3.horizontalSpacing = scaleXDimension(app,
+      get_integer_resource("horizontalSpacing", "Spacing", 5));
+   d->w3.verticalSpacing = scaleYDimension(app,
+      get_integer_resource("verticalSpacing", "Spacing", 6));
    
    if (2 == app->argc) {
       d->label.text = strdup(app->argv[1]);
@@ -267,10 +355,10 @@ void createDialog(AppInfo *app)
 			 app->dpy, app->colormap, app->black);
    d->okButton.w3.borderWidth =
       get_integer_resource("okButton.borderWidth", "Button.BorderWidth", 1);
-   d->okButton.w3.horizontalSpacing = 
-      get_integer_resource("okButton.horizontalSpacing", "Button.Spacing", 4);
-   d->okButton.w3.verticalSpacing = 
-      get_integer_resource("okButton.verticalSpacing", "Button.Spacing", 2);
+   d->okButton.w3.horizontalSpacing = scaleXDimension(app,
+      get_integer_resource("okButton.horizontalSpacing", "Button.Spacing", 4));
+   d->okButton.w3.verticalSpacing = scaleYDimension(app,
+      get_integer_resource("okButton.verticalSpacing", "Button.Spacing", 2));
    d->okButton.label.text =
       getStringResourceWithDefault("okButton.label", "Button.Label", "OK");
    d->okButton.label.font =
@@ -302,12 +390,12 @@ void createDialog(AppInfo *app)
    d->cancelButton.w3.borderWidth =
       get_integer_resource("cancelButton.borderWidth", "Button.BorderWidth",
 			   1);
-   d->cancelButton.w3.horizontalSpacing = 
+   d->cancelButton.w3.horizontalSpacing = scaleXDimension(app,
       get_integer_resource("cancelButton.horizontalSpacing", "Button.Spacing",
-			   4);
-   d->cancelButton.w3.verticalSpacing = 
+			   4));
+   d->cancelButton.w3.verticalSpacing = scaleYDimension(app,
       get_integer_resource("cancelButton.verticalSpacing", "Button.Spacing",
-			   2);
+			   2));
    d->cancelButton.label.text =
       getStringResourceWithDefault("cancelButton.label", "Button.Label",
 				   "Cancel");
@@ -325,10 +413,10 @@ void createDialog(AppInfo *app)
    d->indicator.w3.w.background =
       get_pixel_resource("indicator.background", "Indicator.Background",
 			 app->dpy, app->colormap, app->white);
-   d->indicator.w3.w.width =
-      get_integer_resource("indicator.width", "Indicator.Width", 15);
-   d->indicator.w3.w.height =
-      get_integer_resource("indicator.height", "Indicator.Height", 7);
+   d->indicator.w3.w.width = scaleXDimension(app,
+      get_integer_resource("indicator.width", "Indicator.Width", 15));
+   d->indicator.w3.w.height = scaleYDimension(app,
+      get_integer_resource("indicator.height", "Indicator.Height", 7));
    d->indicator.w3.topShadowColor =
       get_pixel_resource("indicator.topShadowColor",
 			 "Indicator.TopShadowColor",
@@ -346,12 +434,12 @@ void createDialog(AppInfo *app)
    d->indicator.w3.borderWidth =
       get_integer_resource("indicator.borderWidth", "Indicator.BorderWidth",
 			   0);
-   d->indicator.w3.horizontalSpacing =
+   d->indicator.w3.horizontalSpacing = scaleXDimension(app,
       get_integer_resource("indicator.horizontalSpacing", "Indicator.Spacing",
-			   2);
-   d->indicator.w3.verticalSpacing =
+			   2));
+   d->indicator.w3.verticalSpacing =scaleYDimension(app,
       get_integer_resource("indicator.verticalSpacing", "Indicator.Spacing",
-			   4);
+			   4));
    d->indicator.minimumCount =
       get_integer_resource("indicator.minimumCount", "Indicator.MinimumCount",
 			   8);
@@ -1165,7 +1253,12 @@ int main(int argc, char **argv)
 	 exit(EXIT_STATUS_ERROR);
       }
    }
-
+   
+   app.xResolution =
+      WidthOfScreen(app.screen) * 1000 / WidthMMOfScreen(app.screen);
+   app.yResolution =
+      HeightOfScreen(app.screen) * 1000 / HeightMMOfScreen(app.screen);
+   
    createDialog(&app);
    createGCs(&app);
    createDialogWindow(&app);
