@@ -1,3 +1,7 @@
+2000-11-07 06:15  jmknoble
+
+	* x11-ssh-askpass.man.in: Documented new '*inputTimeout' resource.
+
 2000-11-07 05:42  jmknoble
 
 	* x11-ssh-askpass.c, x11-ssh-askpass.h: Did stuff to handle timing
