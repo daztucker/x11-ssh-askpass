@@ -1,6 +1,6 @@
 /* x11-ssh-askpass.c:  A generic X11-based password dialog for OpenSSH.
  * created 1999-Nov-17 03:40 Jim Knoble <jmknoble@jmknoble.cx>
- * autodate: 2000-Oct-30 04:04
+ * autodate: 2000-Nov-07 06:11
  * 
  * by Jim Knoble <jmknoble@jmknoble.cx>
  * Copyright (C) 1999,2000 Jim Knoble
@@ -123,16 +123,59 @@ char *getStringResourceWithDefault(char *instanceName, char *className,
    return(s);
 }
 
+unsigned int getUnsignedIntegerResource(AppInfo *app, char *instanceName,
+					char *className,
+					unsigned int defaultValue)
+{
+   int n;
+   unsigned int value;
+   char c;
+   char *s = get_string_resource(instanceName, className);
+   char *cp = s;
+   
+   if (NULL == s) {
+      return(defaultValue);
+   }
+   while ((*cp) && isspace(*cp)) {
+      /* Skip whitespace. */
+      cp++;
+   }
+   if ('0' == cp[0]) {
+      if (('x' == cp[1]) || ('X' == cp[1])) {
+	 /* Hex */
+	 n = sscanf(cp + 2, "%x %c", &value, &c);
+      } else {
+	 /* Octal */
+	 n = sscanf(cp + 1, "%o %c", &value, &c);
+      }
+      if (1 == n) {
+	 free(s);
+	 return(value);
+      }
+   } else {
+      /* Unsigned Decimal */
+      n = sscanf(cp, "%u %c", &value, &c);
+      if (1 == n) {
+	 free(s);
+	 return(value);
+      }
+   }
+   /* If we get here, no conversion succeeded. */
+   fprintf(stderr, "%s[%ld]: invalid value '%s' for %s.\n",
+	   app->appName, (long) app->pid, s, instanceName);
+   return(defaultValue);
+}
+
 /* Default resolution is 75 dots/inch.  1 in = 2.54 cm. */
-#define DefaultResolution (75 * 10000 / 254)
-long getResolutionResource(char *instanceName, char *className,
+#define DefaultResolution ((75 * 10000) / 254)
+long getResolutionResource(AppInfo *app, char *instanceName, char *className,
 			   char *defaultResolutionSpec)
 {
    char units[3];
    char *s;
    int n;
    long resolution;
-   int i;
+   unsigned int i;
    
    memset(units, 0, sizeof(units));
    s = getStringResourceWithDefault(instanceName, className,
@@ -140,8 +183,10 @@ long getResolutionResource(char *instanceName, char *className,
    /* NOTE: The width of the %s format must be one less than
     * the length of the units[] array above!
     */
-   n = sscanf(s, "%ld / %2s", &resolution, &units);
+   n = sscanf(s, "%ld / %2s", &resolution, units);
    if (n != 2) {
+      fprintf(stderr, "%s[%ld]: invalid value '%s' for %s.\n",
+	      app->appName, (long) app->pid, s, instanceName);
       resolution = DefaultResolution;
    } else {
       if (resolution < 0) {
@@ -276,23 +321,29 @@ void createDialog(AppInfo *app)
    }
    memset(d, 0, sizeof(*d));
 
-   app->grabKeyboard =
+   app->grabKeyboard = 
       get_boolean_resource("grabKeyboard", "GrabKeyboard", True);
    app->grabPointer =
       get_boolean_resource("grabPointer", "GrabPointer", False);
    app->grabPointer =
       get_boolean_resource("grabServer", "GrabServer", False);
+
+   /* inputTimeout resource specified in seconds for easy human interface.
+    * Convert to milliseconds here.
+    */
+   app->inputTimeout = (unsigned long) 1000 *
+      getUnsignedIntegerResource(app, "inputTimeout", "InputTimeout", 0);
    
    app->defaultXResolution =
-      getResolutionResource("defaultXResolution", "DefaultXResolution",
+      getResolutionResource(app, "defaultXResolution", "DefaultXResolution",
 			    "75/in");
    app->defaultYResolution =
-      getResolutionResource("defaultYResolution", "DefaultYResolution",
+      getResolutionResource(app, "defaultYResolution", "DefaultYResolution",
 			    "75/in");
    app->xFuzz =
-      getResolutionResource("xResolutionFuzz", "XResolutionFuzz", "20/in");
+      getResolutionResource(app, "xResolutionFuzz", "XResolutionFuzz", "20/in");
    app->yFuzz =
-      getResolutionResource("yResolutionFuzz", "YResolutionFuzz", "20/in");
+      getResolutionResource(app, "yResolutionFuzz", "YResolutionFuzz", "20/in");
    
    d->title =
       getStringResourceWithDefault("dialog.title", "Dialog.Title",
@@ -618,11 +669,7 @@ void createDialogWindow(AppInfo *app)
    attrMask |= CWBorderPixel;
    attr.cursor = None;
    attrMask |= CWCursor;
-   attr.event_mask = 0;
-   attr.event_mask |= ExposureMask;
-   attr.event_mask |= ButtonPressMask;
-   attr.event_mask |= ButtonReleaseMask;
-   attr.event_mask |= KeyPressMask;
+   attr.event_mask = app->eventMask;
    attrMask |= CWEventMask;
 
    d->dialogWindow = XCreateWindow(app->dpy, app->rootWindow,
@@ -799,7 +846,23 @@ void paintButton(AppInfo *app, Drawable draw, ButtonInfo button)
 			       button.w3.bottomShadowColor);
       }
    }
-   paintLabel(app, draw, button.label);
+   if ((button.w3.shadowThickness > 0) && (button.pressed)) {
+      Dimension pressedAdjustment;
+      
+      pressedAdjustment = button.w3.shadowThickness / 2;
+      if (pressedAdjustment < 1) {
+	 pressedAdjustment = 1;
+      }
+      x = button.label.w.x;
+      y = button.label.w.y;
+      button.label.w.x += pressedAdjustment;
+      button.label.w.y += pressedAdjustment;
+      paintLabel(app, draw, button.label);
+      button.label.w.x = x;
+      button.label.w.y = y;
+   } else {
+      paintLabel(app, draw, button.label);
+   }
    if ((button.w3.shadowThickness <= 0) && (button.pressed)) {
       Pixel tmp = button.w3.w.background;
       button.w3.w.background = button.w3.w.foreground;
@@ -1040,6 +1103,7 @@ void ungrabServer(AppInfo *app)
 
 void cleanUp(AppInfo *app)
 {
+   cancelInputTimeout(app);
    XDestroyWindow(app->dpy, app->dialog->dialogWindow);
    destroyGCs(app);
    destroyDialog(app);
@@ -1107,7 +1171,7 @@ void addToPassphrase(AppInfo *app, char c)
    updateIndicators(app, 1);
 }
 
-void handleKeyPress(AppInfo *app, XKeyEvent *event)
+void handleKeyPress(AppInfo *app, XEvent *event)
 {
    char s[2];
    int n;

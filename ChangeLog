@@ -1,3 +1,19 @@
+2000-11-07 05:42  jmknoble
+
+	* x11-ssh-askpass.c, x11-ssh-askpass.h: Did stuff to handle timing
+	out if no input received.  In particular, this required changing
+	XNextEvent() in main application loop to XtAppNextEvent().  May
+	make this larger and more cumbersome....
+	
+	Also did stuff to make the button labels shift down and to the
+	right when pressed if they're drawn with 3D shading/highlighting,
+	so that they actually *look* pressed.
+	
+	Finally, added code to handle MotionNotify events, so that buttons
+	don't continue to look pressed if the pointer button is pressed,
+	but the pointer is outside the button.	Wheeeee!  Now we have an
+	actual user interface!
+
 2000-11-07 05:23  jmknoble
 
 	* SshAskpass-1337.ad, SshAskpass-NeXTish.ad, SshAskpass-default.ad,
