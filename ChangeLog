@@ -1,3 +1,10 @@
+2001-04-01 17:43  jmknoble
+
+	* TODO, dynlist.c: (Sigh).  I give in.	Modified dynlist.c to work
+	on stupid/broken systems where realloc(NULL, n) != malloc(n). 
+	Thanks to Charles Levert <charles@comm.polymtl.ca> and Steve
+	VanDevender <stevev@efn.org>.
+
 2001-02-14 04:10  jmknoble
 
 	* Imakefile: New version 1.2.0.
@@ -192,7 +199,7 @@
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
 	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
 	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
-	ISO-8859-1 copyright character '©' to ASCII '(C)'.
+	ISO-8859-1 copyright character 'ï¿½' to ASCII '(C)'.
 
 2000-08-28 01:27  jmknoble
 
