@@ -1,3 +1,11 @@
+2001-09-16 17:51  jmknoble
+
+	* Imakefile.in: Changed 'distclean:' target to 'squeakyclean:',
+	since XFree86-4.1.0 and later have a conflicting 'distclean::'
+	target in their imake configuration.
+	
+	Bumped to version 1.2.3.
+
 2001-04-02 19:17  jmknoble
 
 	* Imakefile.in: New version 1.2.2.
@@ -250,7 +258,7 @@
 	* README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
 	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
 	dynlist.c, dynlist.h, x11-ssh-askpass.c, x11-ssh-askpass.h: Changed
-	ISO-8859-1 copyright character '©' to ASCII '(C)'.
+	ISO-8859-1 copyright character 'ï¿½' to ASCII '(C)'.
 
 2000-08-28 01:27  jmknoble
 
