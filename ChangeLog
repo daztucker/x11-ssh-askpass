@@ -5,6 +5,10 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-10-30 05:28  jmknoble
+
+	* Imakefile: Bumped version to 1.0.3.
+
 2000-10-30 05:27  jmknoble
 
 	* x11-ssh-askpass.man.in: Documented the new resources for
