@@ -5,6 +5,13 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-08-28 07:26  jmknoble
+
+	* Imakefile, x11-ssh-askpass.man.in: Added facilities to Imakefile
+	and man page to automatically insert name, date, and version into
+	man page.  Changed install target to include man page.	Rearranged
+	clean and dist targets slightly.  Ready for release.
+
 2000-08-28 06:54  jmknoble
 
 	* x11-ssh-askpass.man.in: Added corrections and clarifications: 

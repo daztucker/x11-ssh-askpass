@@ -74,32 +74,47 @@ EXTRAS = \@@\
  $(CLASS)-NeXTish.ad \@@\
  $(CLASS)-green.ad \@@\
  $(CLASS)-motif.ad \@@\
- $(CLASS)-default.ad
+ $(CLASS)-default.ad \@@\
+ $(NAME).man.in
  
 APP_DEFAULTS	= $(CLASS)-default.ad
 
 LOCAL_LIBRARIES	= -lXt -lX11 -lSM -lICE
 
-#ifndef ComplexProgramTargetNoMan
-#define ComplexProgramTargetNoMan(x) ComplexProgramTarget(x)
-#endif
-
 #ifndef InstallAppDefaults
 #define InstallAppDefaults(x) InstallNamedNonExec(x.ad,x,$(XAPPLOADDIR))
 #endif
 
-ComplexProgramTargetNoMan($(NAME))
+ComplexProgramTarget($(NAME))
 InstallAppDefaults($(CLASS))
 
 install::
 	@set -x; \
-	if [ -f $(DESTDIR)$(BINDIR)/ssh-askpass ]; then \
-	  $(MV) $(DESTDIR)$(BINDIR)/ssh-askpass \
-	    $(DESTDIR)$(BINDIR)/ssh-askpass.old; \
+	if [ -f $(DESTDIR)$(BINDIR)/ssh-askpass ]; then \@@\
+	  $(MV) $(DESTDIR)$(BINDIR)/ssh-askpass \@@\
+	    $(DESTDIR)$(BINDIR)/ssh-askpass.old; \@@\
 	fi
 	$(LN) $(NAME) $(DESTDIR)$(BINDIR)/ssh-askpass
 
-.PHONY: depends changelog realclean spotless tar
+install.man::
+	@set -x; \@@\
+	if [ -f $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX) ]; then \@@\
+	  $(MV) $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX) \@@\
+	    $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX).old; \@@\
+	fi
+	$(LN) $(NAME).$(MANSUFFIX) $(DESTDIR)$(MANDIR)/ssh-askpass.$(MANSUFFIX)
+
+.PHONY: depends changelog realclean distclean spotless tar dist
+
+all:: $(NAME).man
+
+$(NAME).man: $(NAME).man.in Imakefile
+	$(SED) \@@\
+	  -e 's#@NAME@#$(NAME)#g' \@@\
+	  -e 's#@VERSION@#$(VERSION)#g' \@@\
+	  -e 's#@DATE@#$(DATE)#g' \@@\
+	  <$(NAME).man.in >$@.tmp
+	$(MV) $@.tmp $@
 
 depends: depend
 
