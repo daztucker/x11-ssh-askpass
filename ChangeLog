@@ -1,3 +1,12 @@
+2001-09-16 18:09  jmknoble
+
+	* Imakefile.in, README, SshAskpass-1337.ad, SshAskpass-NeXTish.ad,
+	SshAskpass-default.ad, SshAskpass-green.ad, SshAskpass-motif.ad,
+	configure, drawing.c, drawing.h, dynlist.c, dynlist.h, resources.c,
+	resources.h, x11-ssh-askpass.c, x11-ssh-askpass.h,
+	x11-ssh-askpass.man.in: Changed email address from
+	<jmknoble@jmknoble.cx> back to <jmknoble@pobox.com>.
+
 2001-09-16 17:51  jmknoble
 
 	* Imakefile.in: Changed 'distclean:' target to 'squeakyclean:',

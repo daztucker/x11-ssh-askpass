@@ -1,6 +1,6 @@
 .\" x11-ssh-askpass.man
 .\" Created by Matthieu Herrb <matthieu@laas.fr> for OpenBSD
-.\" Modified by Jim Knoble <jmknoble@jmknoble.cx> for non-OpenBSD
+.\" Modified by Jim Knoble <jmknoble@pobox.com> for non-OpenBSD
 .\"   distribution
 .\"
 .Dd @DATE@
@@ -306,7 +306,7 @@ The remaining portions fall under the following copyright and license:
 .Pp
 .Nm
 by Jim Knoble 
-.Aq jmknoble@jmknoble.cx
+.Aq jmknoble@pobox.com
 Copyright \(co 1999,2000,2001 Jim Knoble
 .Pp
 Permission to use, copy, modify, distribute, and sell this software

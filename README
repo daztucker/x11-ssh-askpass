@@ -1,6 +1,6 @@
 # README: Notes about X11-based passphrase dialog for OpenSSH
 # created 1999-Nov-21 jmk
-# autodate: 2001-Apr-01 20:10
+# autodate: 2001-Sep-16 18:07
 
 +-------------+
 | Description |
@@ -105,7 +105,7 @@ You can also decide not to install any app-defaults file:
 
 x11-ssh-askpass is available at:
 
-  http://www.jmknoble.cx/software/x11-ssh-askpass/
+  http://www.pobox.com/~jmknoble/software/x11-ssh-askpass/
 
 +--------------------------+
 | Copyright, License, Etc. |
@@ -151,7 +151,7 @@ The portions derived from xscreensaver require the following notice:
 
 The remaining portions fall under the following copyright and license:
 
-  by Jim Knoble <jmknoble@jmknoble.cx>
+  by Jim Knoble <jmknoble@pobox.com>
   Copyright (C) 1999,2000,2001 Jim Knoble
   
   Permission to use, copy, modify, distribute, and sell this software
