@@ -5,6 +5,12 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-08-28 06:00  jmknoble
+
+	* x11-ssh-askpass.c: Moved saving of argc/argv to after call to
+	XtAppInitialize(), so that toolkit arguments get properly removed
+	from the argument list.
+
 2000-08-28 05:42  jmknoble
 
 	* x11-ssh-askpass.man.in: Changed author email address from

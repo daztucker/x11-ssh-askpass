@@ -1104,6 +1104,8 @@ int main(int argc, char **argv)
    app.toplevelShell = XtAppInitialize(&(app.appContext), progclass,
 					NULL, 0, &argc, argv,
 					defaults, NULL, 0);
+   app.argc = argc;
+   app.argv = argv;
    app.dpy = XtDisplay(app.toplevelShell);
    app.screen = DefaultScreenOfDisplay(app.dpy);
    app.rootWindow = RootWindowOfScreen(app.screen);
