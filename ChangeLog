@@ -5,6 +5,13 @@
    cvs2cl.pl.  See http://www.red-bean.com/~kfogel/cvs2cl.shtml for more.
   -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+- -+-
 
+2000-08-28 06:54  jmknoble
+
+	* x11-ssh-askpass.man.in: Added corrections and clarifications: 
+	Mentioned optional label on command line; noted which toolkit
+	options are unsupported; and added extra indicator-specific
+	resources.
+
 2000-08-28 06:00  jmknoble
 
 	* x11-ssh-askpass.c: Moved saving of argc/argv to after call to
