@@ -16,9 +16,9 @@ The features of x11-ssh-askpass are as follows:
 
   - Configurable via the standard X resource mechanism
     (/usr/lib/X11/app-defaults, ~/.Xdefaults, xrdb, etc.).
-    
+
   - Requires only stock X11 libraries (libXt, libX11, libSM, libICE).
-  
+
   - Can be configured to grab the keyboard and/or pointer (grabs the
     keyboard by default, not the pointer).
 
@@ -105,7 +105,7 @@ You can also decide not to install any app-defaults file:
 
 x11-ssh-askpass is available at:
 
-  http://www.pobox.com/~jmknoble/software/x11-ssh-askpass/
+  https://github.com/openssh/x11-ssh-askpass
 
 +--------------------------+
 | Copyright, License, Etc. |
@@ -153,7 +153,7 @@ The remaining portions fall under the following copyright and license:
 
   by Jim Knoble <jmknoble@pobox.com>
   Copyright (C) 1999,2000,2001 Jim Knoble
-  
+
   Permission to use, copy, modify, distribute, and sell this software
   and its documentation for any purpose is hereby granted without fee,
   provided that the above copyright notice appear in all copies and
