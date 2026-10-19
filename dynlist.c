@@ -34,19 +34,21 @@
 int append_to_list(char ***list_ptr, int *list_len, int *i, char *item)
 {
    char **tmp_ptr;
-   
+   size_t tmp_len;
+
    if (*i >= *list_len)
     {
-       *list_len += LIST_CHUNK_SIZE;
+       tmp_len = *list_len + LIST_CHUNK_SIZE;
        if (NULL == *list_ptr) {
-	  tmp_ptr = malloc(sizeof(**list_ptr) * *list_len);
+	  tmp_ptr = malloc(sizeof(**list_ptr) * tmp_len);
        } else {
-	  tmp_ptr = realloc(*list_ptr, (sizeof(**list_ptr) * *list_len));
+	  tmp_ptr = realloc(*list_ptr, (sizeof(**list_ptr) * tmp_len));
        }
        if (NULL == tmp_ptr)
 	{
 	   return(APPEND_FAILURE);
 	}
+       *list_len = tmp_len;
        *list_ptr = tmp_ptr;
     }
    (*list_ptr)[*i] = item;
@@ -58,19 +60,21 @@ int append_to_list(char ***list_ptr, int *list_len, int *i, char *item)
 int append_to_buf(char **buf, int *buflen, int *i, int c)
 {
    char *tmp_buf;
+   size_t tmp_len;
    
    if (*i >= *buflen)
     {
-       *buflen += BUF_CHUNK_SIZE;
+       tmp_len = *buflen + BUF_CHUNK_SIZE;
        if (NULL == *buf) {
-	  tmp_buf = malloc(sizeof(**buf) * *buflen);
+	  tmp_buf = malloc(sizeof(**buf) * tmp_len);
        } else {
-	  tmp_buf = realloc(*buf, (sizeof(**buf) * *buflen));
+	  tmp_buf = realloc(*buf, (sizeof(**buf) * tmp_len));
        }
        if (NULL == tmp_buf)
 	{
 	   return(APPEND_FAILURE);
 	}
+       *buflen = tmp_len;
        *buf = tmp_buf;
 #ifdef DEBUG
        printf("-->Allocated buffer of size %d\n", *buflen);
