@@ -1,0 +1,24 @@
+*~
+Makefile
+config.h
+config.log
+config.status
+autom4te.cache/
+*.o
+x11-ssh-askpass
+.deps
+SshAskpass
+SshAskpass_ad.h
+stamp-h1
+x11-ssh-askpass.1x
+x11-ssh-askpass.man
+openbsd-compat/.dirstamp
+# Automake files, might want these in release branch.
+Makefile.in
+aclocal.m4
+compile
+config.h.in
+configure
+depcomp
+install-sh
+missing
