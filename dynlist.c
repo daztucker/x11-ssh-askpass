@@ -21,6 +21,7 @@
  * appear in supporting documentation.
  */
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -37,7 +38,9 @@ int append_to_list(char ***list_ptr, int *list_len, int *i, char *item)
 
    if (*i >= *list_len)
     {
-       tmp_len = *list_len + LIST_CHUNK_SIZE;
+       tmp_len = (size_t)*list_len + LIST_CHUNK_SIZE;
+       if (tmp_len >= INT_MAX / sizeof(**list_ptr))
+	  return(APPEND_FAILURE);
        if (NULL == *list_ptr) {
 	  tmp_ptr = malloc(sizeof(**list_ptr) * tmp_len);
        } else {
@@ -63,7 +66,9 @@ int append_to_buf(char **buf, int *buflen, int *i, int c)
    
    if (*i >= *buflen)
     {
-       tmp_len = *buflen + BUF_CHUNK_SIZE;
+       tmp_len = (size_t)*buflen + BUF_CHUNK_SIZE;
+       if (tmp_len >= INT_MAX / sizeof(**buf))
+	  return(APPEND_FAILURE);
        if (NULL == *buf) {
 	  tmp_buf = malloc(sizeof(**buf) * tmp_len);
        } else {
