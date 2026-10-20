@@ -184,6 +184,9 @@ long getResolutionResource(AppInfo *app, char *instanceName, char *className,
    memset(units, 0, sizeof(units));
    s = getStringResourceWithDefault(instanceName, className,
 				    defaultResolutionSpec);
+   if (NULL == s)
+      outOfMemory(app, __LINE__);
+
    /* NOTE: The width of the %s format must be one less than
     * the length of the units[] array above!
     */
@@ -356,7 +359,8 @@ void createLabel(AppInfo *app, char *text, LabelInfo *label)
    if ((!app) || (!text)) {
       return;
    }
-   label->fullText = strdup(text);
+   if ((label->fullText = strdup(text)) == NULL)
+      outOfMemory(app, __LINE__);
    label->multiText = createTextObject(app, label->fullText);
    t = label->multiText;
    substring = strchr(label->fullText, '\n');
@@ -443,6 +447,8 @@ void createDialog(AppInfo *app)
 	 getStringResourceWithDefault("dialog.label", "Dialog.Label",
 				      "Please enter your authentication passphrase:");
    }
+   if (NULL == labelText)
+      outOfMemory(app, __LINE__);
    createLabel(app, labelText, &(d->label));
    freeIf(labelText);
    d->label.font = getFontResource(app, "dialog.font", "Dialog.Font");
